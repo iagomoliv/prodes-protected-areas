@@ -158,7 +158,7 @@ function filterCategory(category) {
         color: '#829460'
       }
     ]);
-    
+
     protectedAreasLayer.setVisParams({rules: updatedRules});
 
   } else {
@@ -322,6 +322,9 @@ function makeChart(feature) {
 
 function onClick(coords) {
 
+  logLabel.style().set('shown', true);
+  logLabel.setValue('Loading...');
+
   var pt = ee.Geometry.Point([coords.lon, coords.lat]);
 
   var filtered = protectedAreas.filterBounds(pt);
@@ -336,9 +339,6 @@ function onClick(coords) {
   filtered.evaluate(function(filtered) {
 
     if (filtered.features.length > 0) {
-
-      logLabel.style().set('shown', true);
-      logLabel.setValue('Loading...');
 
       var selected = filtered.features[0];
       var id = selected.id;
@@ -361,6 +361,14 @@ function onClick(coords) {
       if (!chartPanel.style().get('shown')) {
         chartPanel.style().set('shown', true);
       }
+
+    } else {
+
+      logLabel.setValue('No protected area found');
+
+      ui.util.setTimeout(function() {
+        logLabel.style().set('shown', false);
+      }, 3000);
 
     }
   });
